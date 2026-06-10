@@ -1,0 +1,70 @@
+project:
+  name: sample-house
+  use: detached_house
+  structure: wood
+
+site:
+  area_m2: null
+  zoning: null
+  road_width_m: null
+
+grid:
+  unit: mm
+  module: 910
+  x: [1, 2, 3, 4, 5, 6, 7]
+  y: [い, ろ, は, に, ほ, ま]
+
+outline:
+  origin: southwest
+  path:
+    - E 5460
+    - N 4550
+    - W 5460
+    - S 4550
+    - close
+
+rooms:
+  - id: washitsu
+    name: 和室
+    type: habitable_room
+    cells:
+      - い-1
+      - い-2
+      - い-3
+      - ろ-1
+      - ろ-2
+      - ろ-3
+      - は-1
+      - は-2
+      - は-3
+  - id: ldk
+    name: LDK
+    type: habitable_room
+    cells:
+      - に-4
+      - に-5
+      - に-6
+      - ほ-4
+      - ほ-5
+      - ほ-6
+  - id: washroom
+    name: 洗面
+    type: service_room
+    cells:
+      - ほ-1
+      - ほ-2
+
+openings:
+  - id: w1
+    type: window
+    template: 16520
+    edge: "い通り 1-2間"
+    room: washitsu
+
+evidence:
+  - target: rooms.ldk.cells
+    source: null
+    status: unchecked
+  - target: openings.w1.template
+    source: null
+    status: unchecked
