@@ -25,6 +25,15 @@
 - 自然文指示から YAML と ASCII 図へ変換するワークフロー
 - 法規チェック前処理としての `building-card.yaml` の形
 - PDF OCR を「抽出」ではなく「根拠照合」に使う設計方針
+- Hermes Agent のような自己改善型エージェントへ注入する建築ドメイン記憶の形
+
+## Hermes Direction
+
+This project can be used as a domain layer for a Hermes-style self-improving agent.
+
+Hermes provides the general agent loop: memory, skills, tools, sessions, scheduled automation, and cross-session recall. Grid Plan DSL adds the architectural layer: building memory, drawing-review skills, evidence checks, unresolved issues, and permit-readiness workflows.
+
+The first target is a Hermes skill bundle, not a fork. See [agent-architecture.md](./agent-architecture.md), [hermes-skills.md](./hermes-skills.md), and [hermes-skills/grid-plan-dsl/SKILL.md](./hermes-skills/grid-plan-dsl/SKILL.md).
 
 ## Terminology
 
@@ -175,12 +184,17 @@ Legend: WA = 和室, LD = LDK, SE = 洗面, w = 窓
 - [theory.md](./theory.md): コンセプト、目的、データモデルの研究ノート。
 - [workflow.md](./workflow.md): 実務的な運用フローとデータ構造の定義。
 - [examples/building-card.yaml](./examples/building-card.yaml): 最小 Building Card 例。
+- [agent-architecture.md](./agent-architecture.md): Hermes型エージェントに接続する全体構想。
+- [hermes-skills.md](./hermes-skills.md): 建築確認向けHermesスキルバンドル案。
+- [hermes-skills/grid-plan-dsl/SKILL.md](./hermes-skills/grid-plan-dsl/SKILL.md): Hermes skill雛形。
 
 ## Future Work
 
 - YAML スキーマとバリデータの定義
 - ASCII 平面図レンダラの実装
+- Hermes skill bundle としてのインストール手順
 - 採光・換気・排煙などの法規チェックルールの YAML 化
 - PDF 図面上の根拠位置と Building Card のリンク
 - 直交グリッドでは表しにくい斜め壁・不整形平面への拡張
 - Z 軸方向の断面グリッドによる高さ・屋根・斜線制限表現
+- 将来的なターミナルメニュー/TUI
