@@ -6,7 +6,7 @@
 
 最終的には、建築法規チェックエンジンが扱える `building-card.yaml` を生成し、PDF OCR は正解の自動抽出ではなく、入力済みモデルの根拠照合に使うことを目指します。
 
-## Core Idea
+## 核心アイデア
 
 従来の建築法規自動判定では、PDF 図面や BIM/IFC から情報を自動抽出するアプローチが多く取られます。しかし、PDF OCR の誤認識や図面表記のばらつきは、寸法・面積・開口条件のように小さな差が結果を左右する領域では大きなリスクになります。
 
@@ -16,7 +16,7 @@
 
 つまり、問題を「PDF からの完全自動抽出」ではなく、「人間が入力した構造化モデルの検証」に変換します。
 
-## What This Repository Is
+## このリポジトリの位置づけ
 
 このリポジトリは、現時点では実装済みアプリケーションではなく、以下を固定するための研究ノートです。
 
@@ -27,15 +27,15 @@
 - PDF OCR を「抽出」ではなく「根拠照合」に使う設計方針
 - Hermes Agent のような自己改善型エージェントへ注入する建築ドメイン記憶の形
 
-## Hermes Direction
+## Hermes との接続方針
 
-This project can be used as a domain layer for a Hermes-style self-improving agent.
+このプロジェクトは、Hermes Agent のような自己改善型エージェントに対して、建築ドメインの記憶・スキル・ワークフローを注入するためのレイヤーとして使うことを想定しています。
 
-Hermes provides the general agent loop: memory, skills, tools, sessions, scheduled automation, and cross-session recall. Grid Plan DSL adds the architectural layer: building memory, drawing-review skills, evidence checks, unresolved issues, and permit-readiness workflows.
+Hermes が提供するのは、記憶、スキル、ツール、セッション、定期実行、過去会話の参照といった汎用エージェントのループです。Grid Plan DSL はその上に、建物記憶、図面読解スキル、根拠照合、未解決事項管理、建築確認準備のワークフローを載せるための建築レイヤーです。
 
-The first target is a Hermes skill bundle, not a fork. See [agent-architecture.md](./agent-architecture.md), [hermes-skills.md](./hermes-skills.md), and [hermes-skills/grid-plan-dsl/SKILL.md](./hermes-skills/grid-plan-dsl/SKILL.md).
+最初の目標は Hermes 本体のフォークではなく、Hermes skill bundle として建築確認向けの振る舞いを追加することです。詳細は [agent-architecture.md](./agent-architecture.md)、[hermes-skills.md](./hermes-skills.md)、[hermes-skills/grid-plan-dsl/SKILL.md](./hermes-skills/grid-plan-dsl/SKILL.md) に整理しています。
 
-## Terminology
+## 用語
 
 - **Grid**: 通り芯の集合。X 方向を数字、Y 方向をかなで表す。
 - **Node**: 通り芯の交点。
@@ -44,22 +44,22 @@ The first target is a Hermes skill bundle, not a fork. See [agent-architecture.m
 - **Building Card**: 法規チェックに渡すための決定的な建物データ。
 - **Evidence Check**: Building Card の値が PDF 図面上の記載と一致するかを照合する工程。
 
-## Grid Semantics
+## グリッドの意味づけ
 
 日本の木造住宅で一般的な通り芯を共通言語として採用します。
 
 ```text
-Y axis: い, ろ, は, に, ...
-X axis: 1, 2, 3, 4, ...
-Cell:   い-1, い-2, ろ-1, ...
-Edge:   "い通り 1-2間", "2通り い-ろ間", ...
+Y軸: い, ろ, は, に, ...
+X軸: 1, 2, 3, 4, ...
+Cell: い-1, い-2, ろ-1, ...
+Edge: "い通り 1-2間", "2通り い-ろ間", ...
 ```
 
 このリポジトリでは、`い-1` のような Cell ID は「い通りからろ通り、1通りから2通りに囲まれる区画」を指すものとして扱います。つまり、Cell は左下側の Y/X ラベルで代表します。
 
-## Data Model Example
+## データモデル例
 
-### Outline
+### 外形
 
 ```yaml
 outline:
@@ -75,7 +75,7 @@ outline:
     - close
 ```
 
-### Grid
+### グリッド
 
 ```yaml
 grid:
@@ -84,7 +84,7 @@ grid:
   y: [い, ろ, は, に, ほ, ま]
 ```
 
-### Rooms
+### 部屋
 
 ```yaml
 rooms:
@@ -94,7 +94,7 @@ rooms:
     cells: [に-4, に-5, に-6, ほ-4, ほ-5, ほ-6]
 ```
 
-### Openings
+### 開口・建具
 
 ```yaml
 openings:
@@ -105,9 +105,9 @@ openings:
     room: washitsu
 ```
 
-## Minimal Case Study
+## 最小ケーススタディ
 
-### 1. Natural Language Input
+### 1. 自然文入力
 
 ```text
 910 モジュール。X は 1 から 7、Y は い、ろ、は、に、ほ、ま。
@@ -117,7 +117,7 @@ LDK は に-4 から ほ-6 まで。
 い通り 1-2 間に和室の窓 16520。
 ```
 
-### 2. Structured Building Card
+### 2. 構造化された Building Card
 
 ```yaml
 project:
@@ -149,7 +149,7 @@ openings:
     room: washitsu
 ```
 
-### 3. ASCII Feedback
+### 3. ASCII フィードバック
 
 ```text
 Legend: WA = 和室, LD = LDK, SE = 洗面, w = 窓
@@ -170,7 +170,7 @@ Legend: WA = 和室, LD = LDK, SE = 洗面, w = 窓
 
 ユーザーはこの ASCII 図を見て、「LDK は に-4 から ま-6 まで」「窓は 2-3 間だった」のように修正できます。Agent は修正内容を YAML に反映し、再度 ASCII 図を出力します。
 
-## Workflow
+## ワークフロー
 
 1. **対話構築**: `外形` -> `グリッド` -> `部屋・設備` -> `開口・建具` の順に Agent へ指示する。
 2. **構造化**: Agent が `building-card.yaml` を生成する。
@@ -179,7 +179,7 @@ Legend: WA = 和室, LD = LDK, SE = 洗面, w = 窓
 5. **根拠照合**: PDF OCR を使い、面積・室名・建具記号などの根拠を確認する。
 6. **法規判定**: 決定的な入力データに基づき、OK/NG/不足情報を出力する。
 
-## Repository Structure
+## リポジトリ構成
 
 - [theory.md](./theory.md): コンセプト、目的、データモデルの研究ノート。
 - [workflow.md](./workflow.md): 実務的な運用フローとデータ構造の定義。
@@ -188,7 +188,7 @@ Legend: WA = 和室, LD = LDK, SE = 洗面, w = 窓
 - [hermes-skills.md](./hermes-skills.md): 建築確認向けHermesスキルバンドル案。
 - [hermes-skills/grid-plan-dsl/SKILL.md](./hermes-skills/grid-plan-dsl/SKILL.md): Hermes skill雛形。
 
-## Future Work
+## 今後の展望
 
 - YAML スキーマとバリデータの定義
 - ASCII 平面図レンダラの実装
