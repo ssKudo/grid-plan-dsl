@@ -20,6 +20,51 @@ The bundle should teach the agent to:
 - track evidence against drawings and schedules
 - report unresolved permit-review information
 - turn repeated corrections into better project checklists
+- switch behavior by architectural role while keeping the same building memory
+
+## Role Layers
+
+The root building memory should be shared. The agent behavior should change by role.
+
+```text
+shared core
+  building-card.yaml
+  evidence
+  unresolved issues
+  decisions
+
+role layers
+  designer
+  permit reviewer
+  estimator
+  site supervisor
+```
+
+The same window, room, or wall has different meaning depending on who is using the agent.
+
+| Role | Primary concerns |
+| --- | --- |
+| Designer | room layout, code assumptions, design intent, missing planning decisions |
+| Permit reviewer | legal classification, required drawings, evidence, unresolved code facts |
+| Estimator | quantities, specifications, exclusions, unit-price assumptions |
+| Site supervisor | constructability, interference, ordering, inspections, field changes |
+
+Role layers should not fork the building memory. They should read the same project repository and add role-specific notes, evidence, issues, and decisions.
+
+## GitHub Project Memory
+
+The intended project workflow uses GitHub as the shared memory between people and agents.
+
+```text
+designer creates initial building-card.yaml
+-> permit reviewer checks code and evidence
+-> estimator clones the same repository for quantity takeoff
+-> site supervisor clones the same repository for construction checks
+```
+
+Later roles should not be forced to re-enter all details. By the time the estimator or site supervisor starts, most basic geometry and room/opening data should already exist. Their work should focus on confirming, enriching, and correcting the shared memory from their role-specific point of view.
+
+See [github-workflow.md](./github-workflow.md) for the repository-level workflow.
 
 ## Skill 1: Building Card Intake
 
@@ -143,6 +188,33 @@ Use after repeated corrections, completed checks, or project closeout.
 - Only learn from explicit artifacts or user-approved decisions.
 - Keep project-specific facts separate from reusable process knowledge.
 - Do not encode private client facts into general skills.
+
+## Skill 6: Role-Aware Review
+
+### Trigger
+
+Use when the user identifies their role, such as designer, permit reviewer, estimator, or site supervisor.
+
+### Inputs
+
+- active role
+- `building-card.yaml`
+- existing evidence, decisions, and unresolved issues
+- current project phase
+
+### Outputs
+
+- role-specific summary
+- role-specific unresolved issues
+- suggested next actions
+- files or sections that should be updated
+
+### Rules
+
+- Keep the shared building memory as the source of truth.
+- Do not duplicate facts into role-specific files unless the role adds a different interpretation or decision.
+- Ask fewer low-level intake questions in later phases if the shared memory already contains the needed data.
+- For site supervisor workflows, prefer generated checklists and short field updates over detailed manual modeling.
 
 ## Repository Layout Proposal
 

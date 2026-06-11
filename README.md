@@ -26,6 +26,7 @@
 - 法規チェック前処理としての `building-card.yaml` の形
 - PDF OCR を「抽出」ではなく「根拠照合」に使う設計方針
 - Hermes Agent のような自己改善型エージェントへ注入する建築ドメイン記憶の形
+- GitHubリポジトリを、設計・確認申請・積算・施工で共有するプロジェクト記憶として扱う考え方
 
 ## Hermes との接続方針
 
@@ -34,6 +35,8 @@
 Hermes が提供するのは、記憶、スキル、ツール、セッション、定期実行、過去会話の参照といった汎用エージェントのループです。Grid Plan DSL はその上に、建物記憶、図面読解スキル、根拠照合、未解決事項管理、建築確認準備のワークフローを載せるための建築レイヤーです。
 
 最初の目標は Hermes 本体のフォークではなく、Hermes skill bundle として建築確認向けの振る舞いを追加することです。詳細は [agent-architecture.md](./agent-architecture.md)、[hermes-skills.md](./hermes-skills.md)、[hermes-skills/grid-plan-dsl/SKILL.md](./hermes-skills/grid-plan-dsl/SKILL.md) に整理しています。
+
+将来的には、設計者、確認申請担当、積算担当、現場監督が同じGitHubリポジトリをクローンし、それぞれの役割に応じたエージェントスキルで同じ建物記憶を引き継ぐことを想定しています。後工程ほど、ゼロから細かく入力するのではなく、既に育った `building-card.yaml` を確認・補足・修正する使い方になります。
 
 ## 用語
 
@@ -187,12 +190,15 @@ Legend: WA = 和室, LD = LDK, SE = 洗面, w = 窓
 - [agent-architecture.md](./agent-architecture.md): Hermes型エージェントに接続する全体構想。
 - [hermes-skills.md](./hermes-skills.md): 建築確認向けHermesスキルバンドル案。
 - [hermes-skills/grid-plan-dsl/SKILL.md](./hermes-skills/grid-plan-dsl/SKILL.md): Hermes skill雛形。
+- [github-workflow.md](./github-workflow.md): GitHubを建築プロジェクト記憶として使う構想。
 
 ## 今後の展望
 
 - YAML スキーマとバリデータの定義
 - ASCII 平面図レンダラの実装
 - Hermes skill bundle としてのインストール手順
+- ロール別スキル（設計者、確認申請、積算、現場監督）の整理
+- GitHubブランチ/PR/Issueを使った引き継ぎワークフロー
 - 採光・換気・排煙などの法規チェックルールの YAML 化
 - PDF 図面上の根拠位置と Building Card のリンク
 - 直交グリッドでは表しにくい斜め壁・不整形平面への拡張

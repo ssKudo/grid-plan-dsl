@@ -23,6 +23,7 @@ drawing reading and permit preparation
 -> architectural review skills
 -> evidence checks against drawings
 -> unresolved issue tracking
+-> role-specific project handoff
 -> reusable project workflows
 ```
 
@@ -33,6 +34,8 @@ The first implementation target is not a fork of Hermes. It is a skill bundle an
 Grid Plan DSL is a structured building memory for self-improving architectural agents.
 
 The agent should not only answer questions about a drawing. It should gradually maintain a project model that can be checked, corrected, compared with evidence, and reused across sessions.
+
+The project repository becomes the shared memory for the building. Different people can clone the same repository and use role-specific agent skills against the same `building-card.yaml`.
 
 ## Agent Responsibilities
 
@@ -104,13 +107,49 @@ The skill should improve only through explicit artifacts: corrected YAML, checkl
 
 | Hermes concept | Architectural equivalent |
 | --- | --- |
-| Memory | `building-card.yaml`, project facts, user preferences |
-| Skills | drawing reading, code checks, evidence checks |
-| Sessions | project-specific review history |
+| Memory | `building-card.yaml`, project facts, role notes, user preferences |
+| Skills | drawing reading, code checks, evidence checks, role-aware reviews |
+| Sessions | project-specific review and handoff history |
 | Tools | PDF OCR, image vision, file search, YAML validation |
 | Cron | periodic missing-info and consistency checks |
-| Plugins | jurisdiction rules, office templates, document sources |
+| Plugins | jurisdiction rules, office templates, document sources, role packs |
 | Subagents | parallel review of drawings, code clauses, schedules |
+
+## Role-Aware Workflow
+
+The root memory stays common, but the agent changes behavior by role.
+
+```text
+designer
+  -> creates the first building memory
+  -> records design intent, room layout, legal assumptions
+
+permit reviewer
+  -> checks legal classifications and evidence
+  -> records missing facts and code-review blockers
+
+estimator
+  -> reuses geometry, rooms, openings, and specifications
+  -> adds quantity takeoff, exclusions, unit-price assumptions
+
+site supervisor
+  -> starts from a mature project memory
+  -> uses generated checklists and records field changes
+```
+
+Later phases should not require the same level of manual intake as early design. By construction, the agent should assume that basic geometry, rooms, openings, and many decisions already exist, then focus on short confirmations, field issues, and change history.
+
+## GitHub As Project Memory
+
+GitHub can act as the shared project memory:
+
+- `main` stores the agreed building memory
+- branches store role-specific work
+- Pull Requests review changes between roles
+- Issues track unresolved project questions
+- tags or releases freeze permit, estimate, or construction versions
+
+See [github-workflow.md](./github-workflow.md) for the handoff model.
 
 ## Non-Goals For The First Version
 
