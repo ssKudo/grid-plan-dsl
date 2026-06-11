@@ -1,4 +1,4 @@
-# Conversational Grid Plan DSL
+# テキストで育てる建築図面の共有記憶
 
 **Agent AI と対話しながら、住宅図面をテキストで記述し、ASCII 図と法規チェック用データへ変換するための軽量 DSL。**
 
